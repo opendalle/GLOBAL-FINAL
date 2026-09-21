@@ -81,9 +81,13 @@ ALTER TABLE companies   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE signals     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lead_scores ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "anon_read_companies"   ON companies   FOR SELECT USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_signals"     ON signals     FOR SELECT USING (true);
-CREATE POLICY IF NOT EXISTS "anon_read_lead_scores" ON lead_scores FOR SELECT USING (true);
+DROP POLICY IF EXISTS "anon_read_companies" ON companies;
+DROP POLICY IF EXISTS "anon_read_signals" ON signals;
+DROP POLICY IF EXISTS "anon_read_lead_scores" ON lead_scores;
+
+CREATE POLICY "anon_read_companies"   ON companies    FOR SELECT USING (true);
+CREATE POLICY "anon_read_signals"     ON signals      FOR SELECT USING (true);
+CREATE POLICY "anon_read_lead_scores" ON lead_scores  FOR SELECT USING (true);
 
 -- ============================================================
 -- Schema complete. Run main.py next.
