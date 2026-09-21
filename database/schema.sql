@@ -89,6 +89,10 @@ CREATE POLICY "anon_read_companies"   ON companies    FOR SELECT USING (true);
 CREATE POLICY "anon_read_signals"     ON signals      FOR SELECT USING (true);
 CREATE POLICY "anon_read_lead_scores" ON lead_scores  FOR SELECT USING (true);
 
+CREATE POLICY "anon_read_companies"   ON companies    FOR SELECT USING (true);
+CREATE POLICY "anon_read_signals"     ON signals      FOR SELECT USING (true);
+CREATE POLICY "anon_read_lead_scores" ON lead_scores  FOR SELECT USING (true);
+
 -- ============================================================
 -- Schema complete. Run main.py next.
 -- ============================================================
