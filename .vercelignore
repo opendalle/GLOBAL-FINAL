@@ -1,0 +1,10 @@
+# Ignore Python backend — this is a static frontend-only deployment
+main.py
+requirements.txt
+crawler/
+nlp/
+scoring/
+database/
+config/
+.env
+.github/

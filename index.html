@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS ASIA — Global CRE Intelligence Terminal</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#060609;--surface:#0c0c14;--card:#10101a;--border:#1a1a2e;--border2:#22223a;
+      --accent:#e8ff47;--accent2:#47ffe8;--red:#ff3b5c;--green:#00e676;
+      --orange:#ffab00;--blue:#4fc3f7;--purple:#b39ddb;
+      --muted:#4a4a6a;--muted2:#6a6a8a;--text:#e0e0f0;--font:'IBM Plex Mono',monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:13px}
+    body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+    .topbar{background:#04040a;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:32px;font-size:10px;color:var(--muted2);position:sticky;top:0;z-index:200}
+    .topbar-brand{color:var(--accent);font-weight:600;letter-spacing:.15em;font-size:11px}
+    .topbar-tag{color:var(--muted);font-size:9px;letter-spacing:.08em;border:1px solid var(--border);padding:1px 6px}
+    .topbar-left,.topbar-right{display:flex;align-items:center;gap:16px}
+    .topbar-stat{display:flex;align-items:center;gap:5px}
+    .topbar-stat .val{color:var(--accent);font-weight:600}
+    .live-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+    .ticker-bar{background:#08080f;border-bottom:2px solid var(--accent);height:26px;overflow:hidden;display:flex;align-items:center;position:sticky;top:32px;z-index:199}
+    .ticker-label{background:var(--accent);color:#000;font-size:9px;font-weight:700;letter-spacing:.15em;padding:0 10px;height:100%;display:flex;align-items:center;white-space:nowrap;flex-shrink:0}
+    .ticker-track{flex:1;overflow:hidden}
+    .ticker-content{display:inline-flex;align-items:center;animation:ticker-scroll 80s linear infinite;white-space:nowrap}
+    .ticker-content:hover{animation-play-state:paused}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .t-item{display:inline-flex;align-items:center;gap:5px;padding:0 14px;height:26px;font-size:10px;border-right:1px solid var(--border);color:var(--muted2)}
+    .t-type{font-size:8px;font-weight:700;padding:1px 4px;letter-spacing:.08em}
+    .t-co{color:#fff;font-weight:600}
+    nav{background:rgba(6,6,9,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;position:sticky;top:58px;z-index:198}
+    .nav-left{display:flex;align-items:center;gap:14px}
+    .logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--accent);letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+    .logo-sub{font-family:var(--font);font-size:8px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-top:1px}
+    .nav-divider{width:1px;height:28px;background:var(--border)}
+    .nav-tag{font-size:9px;color:var(--muted);border:1px solid var(--border);padding:2px 8px;letter-spacing:.1em;text-transform:uppercase}
+    .nav-right{display:flex;align-items:center;gap:14px;font-size:10px;color:var(--muted)}
+    .nav-clock{font-size:11px;color:var(--accent2);font-weight:600;font-variant-numeric:tabular-nums}
+    main{max-width:1600px;margin:0 auto;padding:16px 20px 40px}
+    .kpi-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:16px}
+    .kpi{background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+    .kpi-val{font-size:22px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
+    .kpi-label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+    .kpi-sub{font-size:9px;color:var(--muted)}
+    .geo-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+    .geo-pill{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);padding:5px 10px;cursor:pointer;font-size:10px;color:var(--muted2);transition:all .15s;user-select:none}
+    .geo-pill:hover,.geo-pill.active{border-color:var(--accent);color:var(--accent)}
+    .geo-pill.active{background:rgba(232,255,71,.06)}
+    .geo-pill .flag{font-size:13px}
+    .geo-pill .cnt{font-weight:700;color:var(--muted);font-size:9px}
+    .geo-pill.active .cnt{color:var(--accent)}
+    .filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+    .filter-label{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-right:2px}
+    .fbtn{font-family:var(--font);font-size:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted2);padding:4px 10px;cursor:pointer;letter-spacing:.06em;transition:all .12s}
+    .fbtn:hover,.fbtn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.05)}
+    .fbtn.active{font-weight:600}
+    .date-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,255,232,.05)}
+    .search-bar{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);padding:8px 14px;margin-bottom:14px}
+    .search-bar input{flex:1;background:none;border:none;outline:none;font-family:var(--font);font-size:11px;color:var(--text)}
+    .search-bar input::placeholder{color:var(--muted)}
+    .search-count{font-size:10px;color:var(--muted);white-space:nowrap}
+    .table-wrap{border:1px solid var(--border);overflow:hidden}
+    .table-head{display:grid;grid-template-columns:90px 160px 1fr 120px 90px 90px;background:#0a0a12;border-bottom:1px solid var(--border);padding:8px 14px;gap:10px}
+    .th-cell{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+    .signal-row{display:grid;grid-template-columns:90px 160px 1fr 120px 90px 90px;padding:10px 14px;gap:10px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;align-items:start}
+    .signal-row:hover{background:var(--card)}
+    .signal-row:last-child{border-bottom:none}
+    .s-badge{display:inline-flex;align-items:center;font-size:8px;font-weight:700;padding:2px 6px;letter-spacing:.1em;white-space:nowrap}
+    .s-urgency{font-size:8px;color:var(--muted);margin-top:3px}
+    .s-company{font-size:11px;font-weight:600;color:#fff;line-height:1.3}
+    .s-exchange{font-size:9px;color:var(--muted);margin-top:2px}
+    .s-summary{font-size:10px;color:var(--muted2);line-height:1.5}
+    .s-why{font-size:9px;color:var(--muted);margin-top:3px;font-style:italic}
+    .s-loc{font-size:10px;color:var(--text)}
+    .s-country{font-size:9px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:4px}
+    .conf-bar{height:3px;background:var(--border);margin-top:5px}
+    .conf-fill{height:100%;background:var(--accent)}
+    .conf-val{font-size:10px;color:var(--muted2)}
+    .s-date{font-size:9px;color:var(--muted)}
+    .s-source{font-size:9px;color:var(--muted);margin-top:2px}
+    .empty-state{padding:60px 20px;text-align:center;color:var(--muted);font-size:11px}
+    .error-msg{background:rgba(255,59,92,.1);border:1px solid rgba(255,59,92,.3);color:var(--red);padding:10px 14px;font-size:11px;margin-bottom:12px}
+    ::-webkit-scrollbar{width:4px;height:4px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border2)}
+    .footer{border-top:1px solid var(--border);padding:14px 20px;font-size:9px;color:var(--muted);display:flex;justify-content:space-between;margin-top:30px;letter-spacing:.08em}
+    .b-office{background:#0d2b1e;color:#00e676}
+    .b-lease{background:#0d1e2b;color:#4fc3f7}
+    .b-expand{background:#1e0d2b;color:#b39ddb}
+    .b-funding{background:#2b1e0d;color:#ffab00}
+    .b-hiring{background:#2b0d0d;color:#ff6b6b}
+    .b-warehouse{background:#0d2b2b;color:#47ffe8}
+    .b-relocate{background:#2b2b0d;color:#e8ff47}
+    .b-dc{background:#0d0d2b;color:#818cf8}
+    .b-distress{background:#2b0d1a;color:#ff3b5c}
+    .b-filing{background:#1a1a0d;color:#d4a017}
+    .b-reit{background:#1a0d2b;color:#e879f9}
+    @media(max-width:900px){.table-head{display:none}.signal-row{grid-template-columns:1fr !important;gap:6px !important}.kpi-strip{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:901px) and (max-width:1400px){.signal-row,.table-head{grid-template-columns:80px 130px 1fr 110px 80px 80px !important}}
+    .signal-row{min-width:0;overflow:hidden}main{overflow-x:hidden}.pagination{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 0;flex-wrap:wrap}.page-btn{font-family:var(--font);font-size:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted2);padding:5px 12px;cursor:pointer;letter-spacing:.06em;transition:all .12s}.page-btn:hover,.page-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.05)}.page-btn:disabled{opacity:.3;cursor:default;border-color:var(--border);color:var(--muted)}.page-info{font-size:10px;color:var(--muted);padding:0 8px}
+    .pagination{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 0;flex-wrap:wrap}
+    .page-btn{font-family:var(--font);font-size:10px;background:var(--surface);border:1px solid var(--border);color:var(--muted2);padding:5px 12px;cursor:pointer;letter-spacing:.06em;transition:all .12s}
+    .page-btn:hover,.page-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.05)}
+    .page-btn:disabled{opacity:.3;cursor:default;border-color:var(--border);color:var(--muted)}
+    .page-info{font-size:10px;color:var(--muted);padding:0 8px}
+  
+    /* ── AI CHATBOX ── */
+    .chat-fab {
+      position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--accent); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; box-shadow: 0 4px 20px rgba(232,255,71,0.3);
+      transition: transform 0.2s;
+    }
+    .chat-fab:hover { transform: scale(1.08); }
+    .chat-window {
+      position: fixed; bottom: 88px; right: 24px; z-index: 1000;
+      width: 380px; height: 520px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: none; flex-direction: column;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    }
+    .chat-window.open { display: flex; }
+    .chat-header {
+      background: #0a0a14; border-bottom: 1px solid var(--border);
+      padding: 12px 14px; display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .chat-header-left { display: flex; align-items: center; gap: 8px; }
+    .chat-header-title { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; }
+    .chat-header-sub { font-size: 9px; color: var(--muted); }
+    .chat-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 6px; }
+    .chat-close:hover { color: var(--text); }
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 12px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .chat-msg { max-width: 90%; font-size: 11px; line-height: 1.6; }
+    .chat-msg.user { align-self: flex-end; background: rgba(232,255,71,0.1); border: 1px solid rgba(232,255,71,0.2); padding: 8px 10px; color: var(--accent); }
+    .chat-msg.ai { align-self: flex-start; background: var(--card); border: 1px solid var(--border); padding: 8px 10px; color: var(--text); }
+    .chat-msg.thinking { color: var(--muted); font-style: italic; }
+    .chat-input-row {
+      border-top: 1px solid var(--border); padding: 10px 12px;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .chat-input {
+      flex: 1; background: var(--card); border: 1px solid var(--border);
+      font-family: var(--font); font-size: 11px; color: var(--text);
+      padding: 7px 10px; outline: none;
+    }
+    .chat-input:focus { border-color: var(--accent); }
+    .chat-send {
+      background: var(--accent); border: none; cursor: pointer;
+      color: #000; font-family: var(--font); font-size: 10px;
+      font-weight: 700; padding: 7px 12px; letter-spacing: 0.08em;
+    }
+    .chat-send:hover { opacity: 0.85; }
+    .chat-suggestions { padding: 0 12px 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .chat-sug { font-size: 9px; background: var(--card); border: 1px solid var(--border); color: var(--muted2); padding: 3px 8px; cursor: pointer; }
+    .chat-sug:hover { border-color: var(--accent); color: var(--accent); }
+
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-brand">⬡ NEXUS ASIA</span>
+    <span class="topbar-tag">GLOBAL CRE INTELLIGENCE TERMINAL</span>
+    <span style="color:var(--muted);font-size:9px">v4.0</span>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-stat"><div class="live-dot"></div><span>LIVE</span></div>
+    <div class="topbar-stat"><span>🇮🇳</span><span class="val" id="tn-india">—</span></div>
+    <div class="topbar-stat"><span>🇺🇸</span><span class="val" id="tn-usa">—</span></div>
+    <div class="topbar-stat"><span>🇸🇬</span><span class="val" id="tn-sg">—</span></div>
+    <div class="topbar-stat"><span>🇦🇪</span><span class="val" id="tn-uae">—</span></div>
+    <div class="topbar-stat"><span>🇬🇧</span><span class="val" id="tn-uk">—</span></div>
+    <div class="topbar-stat"><span id="last-updated">—</span></div>
+  </div>
+</div>
+
+<div class="ticker-bar">
+  <div class="ticker-label">⬡ LIVE INTEL</div>
+  <div class="ticker-track">
+    <div class="ticker-content" id="ticker-content">
+      <div class="t-item"><span class="t-type b-office">OFFICE</span><span class="t-co">Loading signals...</span></div>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-left">
+    <div class="logo">
+      <span>⬡</span>
+      <div>
+        <div>NEXUS PROP INTEL</div>
+        <div class="logo-sub">Global CRE Terminal · Pan-India Primary · Live Market Feed</div>
+      </div>
+    </div>
+    <div class="nav-divider"></div>
+    <span class="nav-tag">Bloomberg for CRE · by Nexus Asia</span>
+  </div>
+  <div class="nav-right">
+    <span id="signal-count-nav" style="color:var(--accent);font-weight:700">—</span>
+    <span>signals</span>
+    <div class="nav-divider"></div>
+    <span class="nav-clock" id="nav-clock">--:--:--</span>
+  </div>
+</nav>
+
+<main>
+  <div class="kpi-strip">
+    <div class="kpi"><div class="kpi-val" id="kpi-total">—</div><div class="kpi-label">Total Signals</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-companies">—</div><div class="kpi-label">Companies</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-hconf">—</div><div class="kpi-label">High Confidence</div><div class="kpi-sub">score ≥75</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-today">—</div><div class="kpi-label">Today</div><div class="kpi-sub">New signals</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-india" style="color:var(--green)">—</div><div class="kpi-label">India Signals</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-global" style="color:var(--blue)">—</div><div class="kpi-label">Global Signals</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-high" style="color:var(--red)">—</div><div class="kpi-label">High Priority</div><div class="kpi-sub">Lead ≥80</div></div>
+  </div>
+
+  <div class="geo-bar" id="geo-bar">
+    <div class="geo-pill active" data-geo="ALL"><span class="flag">🌐</span><span>All Markets</span><span class="cnt" id="cnt-all">—</span></div>
+    <div class="geo-pill" data-geo="India"><span class="flag">🇮🇳</span><span>India</span><span class="cnt" id="cnt-india">—</span></div>
+    <div class="geo-pill" data-geo="India_Impact"><span class="flag">🌏</span><span>India Impact</span><span class="cnt" id="cnt-impact">—</span></div>
+    <div class="geo-pill" data-geo="USA"><span class="flag">🇺🇸</span><span>USA</span><span class="cnt" id="cnt-usa">—</span></div>
+    <div class="geo-pill" data-geo="UK"><span class="flag">🇬🇧</span><span>UK</span><span class="cnt" id="cnt-uk">—</span></div>
+    <div class="geo-pill" data-geo="Singapore"><span class="flag">🇸🇬</span><span>Singapore</span><span class="cnt" id="cnt-sg">—</span></div>
+    <div class="geo-pill" data-geo="UAE"><span class="flag">🇦🇪</span><span>UAE</span><span class="cnt" id="cnt-uae">—</span></div>
+    <div class="geo-pill" data-geo="Japan"><span class="flag">🇯🇵</span><span>Japan</span><span class="cnt" id="cnt-jp">—</span></div>
+    <div class="geo-pill" data-geo="Australia"><span class="flag">🇦🇺</span><span>Australia</span><span class="cnt" id="cnt-au">—</span></div>
+    <div class="geo-pill" data-geo="China_HK"><span class="flag">🇭🇰</span><span>HK / China</span><span class="cnt" id="cnt-hk">—</span></div>
+    <div class="geo-pill" data-geo="Korea"><span class="flag">🇰🇷</span><span>Korea</span><span class="cnt" id="cnt-kr">—</span></div>
+    <div class="geo-pill" data-geo="SEA"><span class="flag">🌏</span><span>SE Asia</span><span class="cnt" id="cnt-sea">—</span></div>
+    <div class="geo-pill" data-geo="Germany"><span class="flag">🇩🇪</span><span>Germany</span><span class="cnt" id="cnt-de">—</span></div>
+    <div class="geo-pill" data-geo="Canada"><span class="flag">🇨🇦</span><span>Canada</span><span class="cnt" id="cnt-ca">—</span></div>
+    <div class="geo-pill" data-geo="Global"><span class="flag">🌐</span><span>Global</span><span class="cnt" id="cnt-gl">—</span></div>
+  </div>
+
+  <div class="filter-row">
+    <span class="filter-label">Signal</span>
+    <button class="fbtn active" data-filter="ALL">ALL</button>
+    <button class="fbtn" data-filter="OFFICE">OFFICE</button>
+    <button class="fbtn" data-filter="LEASE">LEASE</button>
+    <button class="fbtn" data-filter="EXPAND">EXPAND</button>
+    <button class="fbtn" data-filter="FUNDING">FUNDING</button>
+    <button class="fbtn" data-filter="HIRING">HIRING</button>
+    <button class="fbtn" data-filter="WAREHOUSE">WAREHOUSE</button>
+    <button class="fbtn" data-filter="DATA CENTRE">DATA CENTRE</button>
+    <button class="fbtn" data-filter="RELOCATE">RELOCATE</button>
+    <button class="fbtn" data-filter="DISTRESS">DISTRESS</button>
+    <button class="fbtn" data-filter="FILING">FILING</button>
+  </div>
+
+  <div class="filter-row">
+    <span class="filter-label">Date</span>
+    <button class="fbtn date-btn" data-days="-1">All Time</button>
+    <button class="fbtn date-btn" data-days="0">Today</button>
+    <button class="fbtn date-btn" data-days="3">3 Days</button>
+    <button class="fbtn date-btn active" data-days="7">7 Days</button>
+    <button class="fbtn date-btn" data-days="30">30 Days</button>
+  </div>
+
+  <div id="error-container"></div>
+
+  <div class="search-bar">
+    <span style="color:var(--muted)">⌕</span>
+    <input type="text" id="search-input" placeholder="Search company, location, signal type, country, exchange..." autocomplete="off">
+    <span class="search-count" id="search-count">— signals</span>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head">
+      <div class="th-cell">Signal</div>
+      <div class="th-cell">Company</div>
+      <div class="th-cell">Summary / Why CRE</div>
+      <div class="th-cell">Location</div>
+      <div class="th-cell">Confidence</div>
+      <div class="th-cell">Date / Source</div>
+    </div>
+    <div id="signals-container"><div class="empty-state">Initialising global intelligence feed...</div></div>
+  </div>
+  <div class="pagination" id="pagination"></div>
+</main>
+
+<footer class="footer">
+  <span>⬡ NEXUS ASIA — Global CRE Intelligence Terminal · Pan-India Primary · Live Market Feed · v4.0</span>
+  <span id="footer-updated">—</span>
+</footer>
+
+<script>
+
+
+const SUPABASE_URL='https://smtvdrnasdgtuazrelnj.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtdHZkcm5hc2RndHVhenJlbG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNDc3ODAsImV4cCI6MjA4OTgyMzc4MH0.7tDvMeOsfYCSp5gY-uuy_Lef__3C83-TKqyOKD73d6o';
+const PAGE_SIZE=50;let allSignals=[],filteredSignals=[],currentPage=1,activeFilter='ALL',activeDays=7,activeGeo='ALL',searchQuery='';
+const BC={OFFICE:'b-office',LEASE:'b-lease',EXPAND:'b-expand',FUNDING:'b-funding',HIRING:'b-hiring',WAREHOUSE:'b-warehouse','DATA CENTRE':'b-dc',RELOCATE:'b-relocate',DISTRESS:'b-distress',FILING:'b-filing',REIT:'b-reit'};
+const FLAGS={India:'🇮🇳',USA:'🇺🇸',UK:'🇬🇧',Singapore:'🇸🇬',UAE:'🇦🇪',Japan:'🇯🇵',Australia:'🇦🇺','Hong Kong':'🇭🇰','South Korea':'🇰🇷',Malaysia:'🇲🇾',Indonesia:'🇮🇩',Germany:'🇩🇪',Canada:'🇨🇦',France:'🇫🇷',Vietnam:'🇻🇳',Thailand:'🇹🇭',Philippines:'🇵🇭',Global:'🌐',China:'🇨🇳'};
+const GEO={India:s=>(s.region||s.country||'')==='India',India_Impact:s=>(s.region||'')==='India_Impact',USA:s=>(s.country||s.region||'')==='USA',UK:s=>(s.country||s.region||'')==='UK',Singapore:s=>(s.country||s.region||'')==='Singapore',UAE:s=>(s.country||s.region||'')==='UAE',Japan:s=>(s.country||s.region||'')==='Japan',Australia:s=>(s.country||s.region||'')==='Australia',China_HK:s=>['Hong Kong','China','China_HK'].includes(s.country||s.region||''),Korea:s=>(s.country||'')===('South Korea')||(s.region||'')==='Korea',SEA:s=>['Malaysia','Indonesia','Vietnam','Thailand','Philippines','SEA'].includes(s.country||s.region||''),Germany:s=>(s.country||'')==='Germany',Canada:s=>(s.country||'')==='Canada',Global:s=>['Global','global'].includes(s.country||s.region||'')};
+function updateClock(){const n=new Date();document.getElementById('nav-clock').textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
+setInterval(updateClock,1000);updateClock();
+function filterByDate(s,d){if(d===-1)return s;const c=new Date();if(d===0)c.setHours(0,0,0,0);else{c.setDate(c.getDate()-d);c.setHours(0,0,0,0);}return s.filter(x=>x.created_at?new Date(x.created_at)>=c:true)}
+function applyAllFilters(){let f=filterByDate(allSignals,activeDays);if(activeGeo!=='ALL'&&GEO[activeGeo])f=f.filter(GEO[activeGeo]);if(activeFilter!=='ALL')f=f.filter(s=>(s.signal_type||'').toUpperCase()===activeFilter);if(searchQuery.trim()){const lq=searchQuery.toLowerCase();f=f.filter(s=>([s.companies?.company_name||'',s.summary||'',s.location||'',s.signal_type||'',s.country||'',s.region||'',s.data_source||'',s.why_cre||''].join(' ').toLowerCase()).includes(lq));}filteredSignals=f;currentPage=1;renderPage();updateKPIs(f);document.getElementById('search-count').textContent=f.length+' signals';}
+function updateKPIs(sigs){const today=new Date();today.setHours(0,0,0,0);document.getElementById('kpi-total').textContent=sigs.length.toLocaleString();document.getElementById('kpi-companies').textContent=new Set(sigs.map(s=>s.company_id)).size;document.getElementById('kpi-hconf').textContent=sigs.filter(s=>(s.confidence_score||0)>=75).length;document.getElementById('kpi-today').textContent=sigs.filter(s=>s.created_at&&new Date(s.created_at)>=today).length;document.getElementById('kpi-high').textContent=sigs.filter(s=>(s.priority_level||'')==='HIGH').length;const india=allSignals.filter(GEO.India).length;document.getElementById('kpi-india').textContent=india.toLocaleString();document.getElementById('kpi-global').textContent=(allSignals.length-india).toLocaleString();document.getElementById('signal-count-nav').textContent=allSignals.length.toLocaleString();['india','usa','sg','uae','uk'].forEach((k,i)=>{const keys=['India','USA','Singapore','UAE','UK'];const el=document.getElementById('tn-'+k);if(el)el.textContent=allSignals.filter(GEO[keys[i]]||GEO[k]||(() =>false)).length;});const geoKeys={all:()=>true,india:GEO.India,impact:GEO.India_Impact,usa:GEO.USA,uk:GEO.UK,sg:GEO.Singapore,uae:GEO.UAE,jp:GEO.Japan,au:GEO.Australia,hk:GEO.China_HK,kr:GEO.Korea,sea:GEO.SEA,de:GEO.Germany,ca:GEO.Canada,gl:GEO.Global};Object.entries(geoKeys).forEach(([k,fn])=>{const el=document.getElementById('cnt-'+k);if(el)el.textContent=allSignals.filter(fn).length;});const now=new Date();document.getElementById('last-updated').textContent='Updated '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});document.getElementById('footer-updated').textContent='Last update: '+now.toLocaleDateString('en-IN')+' '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+' IST';}
+function fmtDate(dt){if(!dt)return'—';const d=new Date(dt),diff=Date.now()-d;if(diff<60000)return'just now';if(diff<3600000)return Math.floor(diff/60000)+'m ago';if(diff<86400000)return Math.floor(diff/3600000)+'h ago';return Math.floor(diff/86400000)+'d ago';}
+function renderSignals(sigs){const c=document.getElementById('signals-container');if(!sigs.length){c.innerHTML='<div class="empty-state">No signals match current filters</div>';return;}c.innerHTML=sigs.map(s=>{const type=(s.signal_type||'OFFICE').toUpperCase(),bc=BC[type]||'b-office',co=s.companies?.company_name||'—',summary=(s.summary||'').substring(0,140),why=(s.why_cre||'').substring(0,80),loc=s.location||'—',country=s.country||'India',flag=FLAGS[country]||'🌐',conf=s.confidence_score||0,src=(s.data_source||'').replace(/^GNEWS_/,'').replace(/_/,' ').substring(0,18),urgency=s.priority_level||s.urgency||'MEDIUM',exchg=s.exchange||'',urgColor=urgency==='HIGH'?'var(--red)':urgency==='CRITICAL'?'#ff0055':'var(--muted)';return`<div class="signal-row" onclick="window.open('${s.source_url||'#'}','_blank')"><div><span class="s-badge ${bc}">${type}</span><div class="s-urgency" style="color:${urgColor}">${urgency}</div></div><div><div class="s-company">${co}</div>${exchg?`<div class="s-exchange">${exchg}</div>`:''}</div><div><div class="s-summary">${summary}</div>${why?`<div class="s-why">→ ${why}</div>`:''}</div><div><div class="s-loc">${loc}</div><div class="s-country">${flag} ${country}</div></div><div><div class="conf-val">${conf}</div><div class="conf-bar"><div class="conf-fill" style="width:${conf}%;background:${conf>=75?'var(--green)':conf>=50?'var(--accent)':'var(--muted)'}"></div></div></div><div><div class="s-date">${fmtDate(s.created_at)}</div><div class="s-source">${src}</div></div></div>`;}).join('');}
+function renderPage(){const totalPages=Math.max(1,Math.ceil(filteredSignals.length/PAGE_SIZE));if(currentPage>totalPages)currentPage=totalPages;const start=(currentPage-1)*PAGE_SIZE,end=start+PAGE_SIZE;renderSignals(filteredSignals.slice(start,end));renderPagination(totalPages);}
+function renderPagination(totalPages){const pg=document.getElementById('pagination');if(!pg)return;if(totalPages<=1){pg.innerHTML='';return;}let html='';html+=`<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>`;const delta=2;let pages=new Set([1,totalPages]);for(let i=Math.max(1,currentPage-delta);i<=Math.min(totalPages,currentPage+delta);i++)pages.add(i);const sorted=[...pages].sort((a,b)=>a-b);let prev=0;sorted.forEach(p=>{if(p-prev>1)html+=`<span class="page-info">…</span>`;html+=`<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;prev=p;});html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Next →</button>`;html+=`<span class="page-info">${(currentPage-1)*PAGE_SIZE+1}–${Math.min(currentPage*PAGE_SIZE,filteredSignals.length)} of ${filteredSignals.length}</span>`;pg.innerHTML=html;}
+function goPage(p){const totalPages=Math.ceil(filteredSignals.length/PAGE_SIZE);if(p<1||p>totalPages)return;currentPage=p;renderPage();window.scrollTo({top:0,behavior:'smooth'});}
+function buildTicker(sigs){const tc=document.getElementById('ticker-content');if(!tc||!sigs.length)return;const items=sigs.filter(s=>s.summary&&s.company_id).slice(0,40);if(!items.length)return;const html=items.map(s=>{const type=(s.signal_type||'OFFICE').toUpperCase(),bc=BC[type]||'b-office',co=(s.companies?.company_name||'').substring(0,20),flag=FLAGS[s.country||'India']||'🌐',loc=(s.location||'').substring(0,14);return`<div class="t-item"><span class="t-type ${bc}">${type}</span><span class="t-co">${co}</span><span style="font-size:12px">${flag}</span><span style="color:var(--muted);font-size:9px">${loc}</span></div>`;}).join('');tc.innerHTML=html+html;tc.style.animationDuration=Math.max(40,items.length*2.5)+'s';}
+async function fetchSignals(){try{const res=await fetch(`${SUPABASE_URL}/rest/v1/signals?select=*,companies(company_name)&order=created_at.desc&limit=500`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${SUPABASE_ANON_KEY}`}});if(!res.ok)throw new Error(`HTTP ${res.status}`);return await res.json();}catch(err){document.getElementById('error-container').innerHTML=`<div class="error-msg">⚠ Could not fetch data: ${err.message}</div>`;return[];}}
+document.querySelectorAll('.fbtn[data-filter]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.fbtn[data-filter]').forEach(x=>x.classList.toggle('active',x===b));activeFilter=b.dataset.filter;applyAllFilters();}));
+document.querySelectorAll('.date-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.date-btn').forEach(x=>x.classList.toggle('active',x===b));activeDays=parseInt(b.dataset.days);applyAllFilters();}));
+document.getElementById('geo-bar').addEventListener('click',e=>{const p=e.target.closest('.geo-pill');if(!p)return;document.querySelectorAll('.geo-pill').forEach(x=>x.classList.toggle('active',x===p));activeGeo=p.dataset.geo;applyAllFilters();});
+document.getElementById('search-input').addEventListener('input',e=>{searchQuery=e.target.value;applyAllFilters();});
+(async()=>{allSignals=await fetchSignals();if(allSignals.length){buildTicker(allSignals);applyAllFilters();}else{document.getElementById('signals-container').innerHTML='<div class="empty-state">No signals found. Run the crawler to populate data.</div>';}})();
+setInterval(async()=>{allSignals=await fetchSignals();buildTicker(allSignals);applyAllFilters();},5*60*1000);
+</script>
+
+<!-- AI CHAT WIDGET -->
+<button class="chat-fab" onclick="toggleChat()" title="Ask Nexus AI">⬡</button>
+<div class="chat-window" id="chat-window">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div>
+        <div class="chat-header-title">⬡ NEXUS AI ANALYST</div>
+        <div class="chat-header-sub">Powered by Gemini · Ask anything about CRE intel</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-msg ai">
+      Hello. I'm your Nexus CRE Intelligence analyst.<br><br>
+      Ask me about market trends, company activity, demand signals, or anything in the live feed.
+    </div>
+  </div>
+  <div class="chat-suggestions" id="chat-suggestions">
+    <span class="chat-sug" onclick="askSuggestion(this)">Top signals today</span>
+    <span class="chat-sug" onclick="askSuggestion(this)">India GCC trends</span>
+    <span class="chat-sug" onclick="askSuggestion(this)">Mumbai vs Bengaluru</span>
+    <span class="chat-sug" onclick="askSuggestion(this)">High priority leads</span>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" placeholder="Ask about CRE intel..." autocomplete="off"
+      onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()">ASK →</button>
+  </div>
+</div>
+
+<script>
+const GEMINI_CHAT_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCk_J6g8rovloY0N9PtnNUaJoon4nIYjDQ';
+
+function toggleChat() {
+  const w = document.getElementById('chat-window');
+  w.classList.toggle('open');
+  if (w.classList.contains('open')) {
+    document.getElementById('chat-input').focus();
+  }
+}
+
+function askSuggestion(el) {
+  document.getElementById('chat-input').value = el.textContent;
+  sendChat();
+}
+
+function appendMsg(text, role) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerHTML = text.replace(/
+/g, '<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+
+  document.getElementById('chat-suggestions').style.display = 'none';
+  appendMsg(q, 'user');
+  const thinking = appendMsg('Analysing live signals...', 'ai thinking');
+
+  // Build context from loaded signals
+  const ctx = allSignals.slice(0, 30).map(s => {
+    const co = s.companies?.company_name || 'Unknown';
+    return `${s.signal_type||'?'} | ${co} | ${s.location||'?'} | ${s.country||'?'} | conf:${s.confidence_score||0} | ${(s.summary||'').substring(0,80)}`;
+  }).join('
+');
+
+  const prompt = `You are the Nexus Asia CRE Intelligence Analyst — expert in commercial real estate across India and global markets.
+
+LIVE SIGNAL CONTEXT (${allSignals.length} total signals in system):
+${ctx || 'Feed loading...'}
+
+USER QUESTION: ${q}
+
+Answer concisely in 2-4 sentences. Be specific and data-driven. Reference the live signals where relevant.
+Format numbers clearly. For India, use lakh/crore. For global, use standard units.
+Do not use markdown headers or bullet points — plain conversational text only.`;
+
+  try {
+    const res = await fetch(GEMINI_CHAT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.4, maxOutputTokens: 300 }
+      })
+    });
+    const data = await res.json();
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
+    thinking.className = 'chat-msg ai';
+    thinking.innerHTML = reply.replace(/
+/g, '<br>');
+  } catch (err) {
+    thinking.className = 'chat-msg ai';
+    thinking.innerHTML = 'Intelligence feed error. Please try again.';
+  }
+}
+</script>
+
+</body>
+</html>
